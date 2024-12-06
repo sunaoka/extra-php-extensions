@@ -4,14 +4,31 @@ resolve_php_versions = $(or $(php_versions),`jq -r '.php | join(" ")' ${1}/confi
 resolve_tags = `./new-docker-tags.php $(DOCKER_TAG)`
 BREF_VERSION = 2
 
+# Define all the environment variables depending on the CPU
+# Set CPU= (empty) to build for x86
+# Set CPU=arm to build for ARM
+ifeq ($(CPU), arm) # if $CPU=="arm"
+  $(info "⚠️  Building for ARM") # Print a message
+  export CPU_PREFIX = arm-
+else
+  $(info "⚠️  Building for x86") # Print a message
+  export CPU_PREFIX =
+endif
+
 define build_docker_image
-	docker build -t bref/${1}-php-${2} --build-arg PHP_VERSION=${2} --build-arg BREF_VERSION=${BREF_VERSION} ${DOCKER_BUILD_FLAGS} ${1}
+	docker build -t bref/${1}-${CPU_PREFIX}php-${2} --build-arg PHP_VERSION=${2} --build-arg CPU_PREFIX=${CPU_PREFIX} --build-arg BREF_VERSION=${BREF_VERSION} ${DOCKER_BUILD_FLAGS} ${1}
 endef
 
 docker-images:
 	if [ "${layer}" != "*" ]; then test -d layers/${layer}; fi
 	set -e; \
 	for dir in layers/${layer}; do \
+		if [ "${CPU_PREFIX}" = "arm-" ]; then \
+			if  [ "$${dir}" = "layers/cassandra" ] || \
+				[ "$${dir}" = "layers/datadog" ]; then \
+				continue; \
+			fi; \
+		fi; \
 		for php_version in $(call resolve_php_versions,$${dir}); do \
 			echo "###############################################"; \
 			echo "###############################################"; \
@@ -26,12 +43,18 @@ test: docker-images
 	if [ "${layer}" != "*" ]; then test -d layers/${layer}; fi
 	set -e; \
 	for dir in layers/${layer}; do \
+		if [ "${CPU_PREFIX}" = "arm-" ]; then \
+			if  [ "$${dir}" = "layers/cassandra" ] || \
+				[ "$${dir}" = "layers/datadog" ]; then \
+				continue; \
+			fi; \
+		fi; \
 		for php_version in $(call resolve_php_versions,$${dir}); do \
 			echo "###############################################"; \
 			echo "###############################################"; \
 			echo "### Testing $${dir} PHP$${php_version}"; \
 			echo "###"; \
-			docker build --build-arg PHP_VERSION=$${php_version} --build-arg TARGET_IMAGE=$${dir}-php-$${php_version} -t bref/test-$${dir}-$${php_version} tests ; \
+			docker build --build-arg PHP_VERSION=$${php_version} --build-arg CPU_PREFIX=${CPU_PREFIX} --build-arg TARGET_IMAGE=$${dir}-${CPU_PREFIX}php-$${php_version} -t bref/test-$${dir}-$${php_version} tests ; \
 			docker run --entrypoint= --rm -v $$(pwd)/$${dir}:/var/task bref/test-$${dir}-$${php_version} /opt/bin/php /var/task/test.php ; \
 			if docker run --entrypoint= --rm -v $$(pwd)/$${dir}:/var/task bref/test-$${dir}-$${php_version} /opt/bin/php -v 2>&1 >/dev/null | grep -q 'Unable\|Warning'; then exit 1; fi ; \
 			echo ""; \
@@ -48,17 +71,23 @@ layers: docker-images
 	mkdir -p export/tmp
 	set -e; \
 	for dir in layers/${layer}; do \
+		if [ "${CPU_PREFIX}" = "arm-" ]; then \
+			if  [ "$${dir}" = "layers/cassandra" ] || \
+				[ "$${dir}" = "layers/datadog" ]; then \
+				continue; \
+			fi; \
+		fi; \
 		for php_version in $(call resolve_php_versions,${PWD}/$${dir}); do \
 			echo "###############################################"; \
 			echo "###############################################"; \
 			echo "### Exporting $${dir} PHP$${php_version}"; \
 			echo "###"; \
 			cd ${PWD} ; rm -rf export/tmp/${layer} || true ; cd export/tmp ; \
-			CID=$$(docker create --entrypoint=scratch bref/$${dir}-php-$${php_version}) ; \
+			CID=$$(docker create --entrypoint=scratch bref/$${dir}-${CPU_PREFIX}php-$${php_version}) ; \
 			docker cp $${CID}:/opt . ; \
 			docker rm $${CID} ; \
 			cd ./opt ; \
-			zip --quiet -X --recurse-paths ../../`echo "$${dir}-php-$${php_version}" | sed -e "s/layers\//layer-/g"`.zip . ; \
+			zip --quiet -X --recurse-paths ../../`echo "$${dir}-${CPU_PREFIX}php-$${php_version}" | sed -e "s/layers\//layer-/g"`.zip . ; \
 			echo ""; \
 		done \
 	done

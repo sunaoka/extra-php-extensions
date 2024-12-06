@@ -1,16 +1,17 @@
+ARG CPU_PREFIX
 ARG PHP_VERSION
 ARG BREF_VERSION
-FROM bref/build-php-$PHP_VERSION:$BREF_VERSION AS ext
+FROM bref/${CPU_PREFIX}build-php-$PHP_VERSION:$BREF_VERSION AS ext
 
-RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
-    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
+RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION.(PHP_ZTS ? '-zts' : '');") \
+    && architecture=$(uname -m) \
+    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/$architecture/$version \
     && mkdir -p /tmp/blackfire \
     && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp/blackfire \
     && cp /tmp/blackfire/blackfire-*.so /tmp/blackfire.so \
     && rm -rf /tmp/blackfire /tmp/blackfire-probe.tar.gz
 
-RUN echo 'extension=blackfire.so' > /tmp/ext.ini
-
+RUN printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8307\n" > /tmp/ext.ini
 
 # Build the final image with just the files we need
 FROM scratch
