@@ -1,12 +1,27 @@
 # Change log
 
-## 1.4.11
+## 1.7.2
 
-- Updated Blackfire to version 1.92.28.
+- Update the tideways extension
 
-## 1.4.11
+## 1.7.1
 
-- Updated Blackfire to version 1.92.29.
+- Fix odbc extension missing files
+
+## 1.7.0
+
+- Add support for PHP 8.4 for most extensions.
+
+## 1.6.0
+
+- Add support for PHP 8.4 for postgres
+
+## 1.5.0
+
+- Add support for PHP 8.4 for gd, sqlsrv and mongodb
+- Added h3 extension
+- Updated Blackfire to version 1.92.30.
+- Updated NewRelic Agent to v11.3.0.16
 
 ## 1.4.10
 
