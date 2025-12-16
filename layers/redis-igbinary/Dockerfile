@@ -4,7 +4,7 @@ ARG BREF_VERSION
 FROM bref/${CPU_PREFIX}build-php-$PHP_VERSION:$BREF_VERSION AS ext
 
 RUN pecl install igbinary && \
-    pecl install -D 'enable-redis-igbinary="yes"' redis && \
+    pecl install -D 'enable-redis-igbinary="yes"' --force redis-6.2.0 && \
     cp `php-config --extension-dir`/igbinary.so /tmp/igbinary.so && \
     cp `php-config --extension-dir`/redis.so /tmp/redis.so && \
     echo 'extension=igbinary.so' > /tmp/ext-igbinary.ini && \

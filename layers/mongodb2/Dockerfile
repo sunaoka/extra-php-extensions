@@ -1,9 +1,8 @@
-ARG CPU_PREFIX
 ARG PHP_VERSION
 ARG BREF_VERSION
-FROM bref/${CPU_PREFIX}build-php-$PHP_VERSION:$BREF_VERSION AS ext
+FROM bref/build-php-$PHP_VERSION:$BREF_VERSION AS ext
 
-RUN pecl install --force mongodb-1.20.0
+RUN pecl install --force mongodb-2.1.4
 RUN cp `php-config --extension-dir`/mongodb.so /tmp/mongodb.so
 RUN echo 'extension=mongodb.so' > /tmp/ext.ini
 

@@ -1,5 +1,37 @@
 # Change log
 
+## 1.8.6
+
+- Update datadog extension to support PHP 8.4
+
+## 1.8.5
+
+- Upgrade Imagick to support PHP 8.4
+- Updated Blackfire to version 1.92.40.
+
+## 1.8.4
+
+- Updated Blackfire to version 1.92.37.
+
+## 1.8.3
+
+- Updated Blackfire to version 1.92.34.
+
+## 1.8.2
+
+- Updated Blackfire to version 1.92.33.
+
+## 1.8.1
+
+- Updated Blackfire to version 1.92.32.
+
+## 1.8.0
+
+- Upgrade Imagick to version 7.1.1-38 and build with support for AVIF format (aom encoder).
+- Added support for [MongoDB driver for PHP](https://pecl.php.net/package/mongodb) 2.0.0
+- Use official Tideways image
+- Upgrade NewRelic Agent to v11.7.0.21
+
 ## 1.7.2
 
 - Update the tideways extension
