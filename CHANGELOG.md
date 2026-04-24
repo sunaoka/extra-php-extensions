@@ -1,5 +1,35 @@
 # Change log
 
+## 3.0.2
+
+- Updated Blackfire to version 1.92.60.
+
+## 3.0.1
+
+- Update sqlsrv extension
+
+## 3.0.0
+
+- Bref v3 compatibility.
+- No longer compatible with Bref v2. If you use Bref v2, use the `1.x` version of the Bref extra extensions.
+
+## 2.0.0
+
+There is no 2.0.0 version. We're skipping v2 to jump to v3 to align with the version of Bref.
+
+As a reminder:
+
+- v1 of the extra extensions is compatible with Bref v2 (that was confusing).
+- v3 of the extra extensions is compatible with Bref v3.
+
+## 1.8.7
+
+- Updated Blackfire to version 1.92.53.
+
+## 1.8.7
+
+- Updated Blackfire to version 1.92.57.
+
 ## 1.8.6
 
 - Update datadog extension to support PHP 8.4

@@ -2,7 +2,7 @@ SHELL := /bin/bash
 layer ?= *
 resolve_php_versions = $(or $(php_versions),`jq -r '.php | join(" ")' ${1}/config.json`)
 resolve_tags = `./new-docker-tags.php $(DOCKER_TAG)`
-BREF_VERSION = 2
+BREF_VERSION = 3
 
 # Define all the environment variables depending on the CPU
 # Set CPU= (empty) to build for x86
@@ -115,6 +115,10 @@ publish-docker-images: docker-images
 			echo "docker push $$publicImage:latest"; \
 			docker tag $$privateImage:latest $$publicImage:latest; \
 			docker push $$publicImage:latest; \
+			echo ""; \
+			echo "docker push $$publicImage:3"; \
+			docker tag $$privateImage:latest $$publicImage:3; \
+			docker push $$publicImage:3; \
 			if (test $(DOCKER_TAG)); then \
 			  echo "Pushing tagged images"; \
 			  for tag in $(call resolve_tags); do \

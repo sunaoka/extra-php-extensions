@@ -5,7 +5,7 @@ FROM bref/${CPU_PREFIX}build-php-$PHP_VERSION:$BREF_VERSION AS ext
 
 RUN set -ex && \
     LD_LIBRARY_PATH= && \
-    yum -y install bzip2-devel && \
+    dnf -y install bzip2-devel && \
     pecl channel-update pecl.php.net && \
     yes '' | pecl install bsdiff-stable && \
     cp "$(php-config --extension-dir)/bsdiff.so" /tmp/bsdiff.so && \

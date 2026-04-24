@@ -8,14 +8,16 @@ a limit of 5 layers per Lambda. You can also utilise the provided docker images 
 
 > **Note**
 >
-> If you are using Bref v2, you need to use version `1.x` of the `bref/extra-php-extensions` package.
+> If you are using Bref v3, you need to use version `3.x` of the `bref/extra-php-extensions` package.
 >
-> If you are using Bref v1, you need to use version `0.x` of the `bref/extra-php-extensions` package.
+> There is no version `2.x` of the `bref/extra-php-extensions` package.
+>
+> If you are using Bref v2, you need to use version `1.x` of the `bref/extra-php-extensions` package.
 
 
 > **Warning**
 >
-> **ARM64 is not supported yet with Bref v2.**
+> **ARM64 is not supported with extra extensions.**
 
 
 We are happy to get contributions for other extensions. Sky is the limit! (And also your knowledge with Docker...)
@@ -43,7 +45,7 @@ functions:
         handler: bin/console
         runtime: php-81
         layers:
-            - ${bref-extra:amqp-php-81} # <----- Example for AMQP layer
+            - ${bref-extra:amqp-php-83} # <----- Example for AMQP layer
 ```
 
 ### Available layers
@@ -80,7 +82,7 @@ functions:
 | ODBC Snowflake   | `${bref-extra:odbc-snowflake-php-81}`  |
 | OpenSwoole       | `${bref-extra:openswoole-php-81}`      |
 | OpenTelemetry    | `${bref-extra:opentelemetry-php-81}`   |
-| Oracle           | `${bref-extra:oci8-php-80}`            |
+| Oracle           | `${bref-extra:oci8-php-83}`            |
 | Pcov             | `${bref-extra:pcov-php-81}`            |
 | PostgreSQL       | `${bref-extra:pgsql-php-81}`           |
 | RdKafka          | `${bref-extra:rdkafka-php-81}`         |
@@ -184,11 +186,15 @@ docker-compose.yml
 
 Dockerfile-phpFpm
 ```
-FROM bref/php-82-fpm-dev:2
-COPY --from=bref/extra-mongodb-php-82:1 /opt /opt
+FROM bref/php-82-fpm-dev:3
+COPY --from=bref/extra-mongodb-php-82:3 /opt /opt
 ```
 
 ## For contributors and maintainers
+
+### Releasing
+
+Run the [Release](https://github.com/brefphp/extra-php-extensions/actions/workflows/release.yml) workflow.
 
 ### Creating a new layer
 
@@ -225,38 +231,6 @@ You can publish the layer in your AWS account to test it in AWS Lambda as well:
 ```
 # Publish a single layer on a single PHP version in a single region
 layer=imagick php_versions=81 only_region=us-east-1 make publish
-```
-
-### Deploy new versions
-
-#### Use Github actions
-
-Prepare the changelog with some release notes. Then push your changes to `prepare-release` branch.
-The Github Action will build an publish layers and then commit the `layers.json` to your PR.
-
-Now you will just merge and create a tag.
-
-#### The manual way
-
-```
-export AWS_PROFILE=my_profile
-make publish
-git add layers.json
-git commit -m "New version of layers"
-git push
-```
-
-#### Config
-
-You can also build only one specific layer by providing `layer=blackfire` to `make`.
-Same thing for some specific version(s) of php by providing `php_versions="80 81"` to `make`.
-You can invoke both ways:
-
-```shell
-# First way: make with named arguments
-make layer=gd php_versions=81
-# Second way: environment variables passed to make
-layer=blackfire php_versions=81 make
 ```
 
 ## Lambda layers in details
