@@ -108,7 +108,7 @@ publish-docker-images: docker-images
 			echo "###############################################"; \
 			echo "### Publishing $${dir} PHP$${php_version}"; \
 			echo "###"; \
-			privateImage="bref/$${dir}-php-$${php_version}"; \
+			privateImage="bref/$${dir}-${CPU_PREFIX}php-$${php_version}"; \
 			publicImage=$${privateImage/layers\//extra-}; \
 			echo "Image name: $$publicImage"; \
 			echo ""; \
